@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Create Customer | MyBank</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 min-h-screen flex items-center justify-center p-5">
+
+<div class="bg-white w-full max-w-lg rounded-2xl shadow-xl p-8">
+    <h1 class="text-2xl font-bold text-blue-900">
+        Create Customer Account
+    </h1>
+    <p class="text-gray-500 mt-2 mb-6">
+        Administrator-only customer registration
+    </p>
+
+    {% for message in get_flashed_messages() %}
+    <p class="bg-red-50 text-red-700 p-3 rounded mb-4">
+        {{ message }}
+    </p>
+    {% endfor %}
+
+    <form method="POST" class="space-y-4">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <label class="block">
+            <span class="text-sm font-medium">Full Name</span>
+            <input type="text" name="full_name" required maxlength="100"
+                class="border rounded-lg p-3 w-full mt-1">
+        </label>
+
+        <label class="block">
+            <span class="text-sm font-medium">Email</span>
+            <input type="email" name="email" required maxlength="150"
+                class="border rounded-lg p-3 w-full mt-1">
+        </label>
+
+        <label class="block">
+            <span class="text-sm font-medium">Temporary Password</span>
+            <input type="password" name="password" required minlength="8"
+                class="border rounded-lg p-3 w-full mt-1">
+        </label>
+
+        <label class="block">
+            <span class="text-sm font-medium">Default 6-Digit PIN</span>
+            <input type="password" name="pin" required minlength="6"
+                maxlength="6" pattern="[0-9]{6}" inputmode="numeric"
+                class="border rounded-lg p-3 w-full mt-1">
+        </label>
+
+        <button type="submit"
+            class="bg-blue-800 text-white rounded-lg p-3 w-full">
+            Create Customer
+        </button>
+    </form>
+
+    <a href="{{ url_for('admin.dashboard') }}"
+       class="block text-center text-blue-700 mt-6">
+        Back to Admin Dashboard
+    </a>
+</div>
+</body>
+</html>

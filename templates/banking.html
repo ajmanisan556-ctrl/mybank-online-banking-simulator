@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Transactions | MyBank</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 min-h-screen p-5">
+<div class="max-w-5xl mx-auto">
+
+    <header class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold text-blue-900">MyBank</h1>
+        <a href="{{ url_for('dashboard') }}"
+           class="text-blue-700 font-semibold">
+            Back to Dashboard
+        </a>
+    </header>
+
+    <section class="bg-blue-900 text-white rounded-2xl p-8 mb-8 shadow-lg">
+        <p class="text-blue-200">Available Virtual Balance</p>
+        <h2 class="text-4xl font-bold mt-3">
+            PHP {{ "{:,.2f}".format(account.balance) }}
+        </h2>
+        <p class="text-blue-200 mt-5">Account Number</p>
+        <p class="font-mono">{{ account.account_number }}</p>
+    </section>
+
+    {% for message in get_flashed_messages() %}
+    <div class="bg-white border-l-4 border-blue-600 p-4 mb-5 rounded">
+        {{ message }}
+    </div>
+    {% endfor %}
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-10">
+
+        <form method="POST" class="bg-white p-6 rounded-xl shadow">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="action" value="deposit">
+            <h3 class="font-bold text-xl mb-4">Deposit</h3>
+            <input type="number" name="amount" step="0.01"
+                min="0.01" max="1000000000" required
+                placeholder="Amount (PHP)"
+                class="border p-3 rounded-lg w-full mb-4">
+            
+<label class="block mb-3">
+    <span class="text-sm font-medium text-gray-700">
+        Transaction PIN
+    </span>
+    <input
+        type="password"
+        name="transaction_pin"
+        required
+        minlength="6"
+        maxlength="6"
+        pattern="[0-9]{6}"
+        inputmode="numeric"
+        autocomplete="off"
+        placeholder="Enter your 6-digit PIN"
+        class="border rounded-lg p-3 w-full mt-1"
+    >
+</label>
+<button class="bg-green-600 text-white rounded-lg p-3 w-full">
+                Deposit Virtual Funds
+            </button>
+        </form>
+
+        <form method="POST" class="bg-white p-6 rounded-xl shadow">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="action" value="withdraw">
+            <h3 class="font-bold text-xl mb-4">Withdraw</h3>
+            <input type="number" name="amount" step="0.01"
+                min="0.01" max="1000000000" required
+                placeholder="Amount (PHP)"
+                class="border p-3 rounded-lg w-full mb-4">
+            
+<label class="block mb-3">
+    <span class="text-sm font-medium text-gray-700">
+        Transaction PIN
+    </span>
+    <input
+        type="password"
+        name="transaction_pin"
+        required
+        minlength="6"
+        maxlength="6"
+        pattern="[0-9]{6}"
+        inputmode="numeric"
+        autocomplete="off"
+        placeholder="Enter your 6-digit PIN"
+        class="border rounded-lg p-3 w-full mt-1"
+    >
+</label>
+<button class="bg-amber-600 text-white rounded-lg p-3 w-full">
+                Withdraw Virtual Funds
+            </button>
+        </form>
+
+        <form method="POST" class="bg-white p-6 rounded-xl shadow">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="action" value="transfer">
+            <h3 class="font-bold text-xl mb-4">Transfer</h3>
+            <input type="text" name="recipient" required
+                placeholder="Recipient Account Number"
+                class="border p-3 rounded-lg w-full mb-3">
+            <input type="number" name="amount" step="0.01"
+                min="0.01" max="1000000000" required
+                placeholder="Amount (PHP)"
+                class="border p-3 rounded-lg w-full mb-4">
+            
+<label class="block mb-3">
+    <span class="text-sm font-medium text-gray-700">
+        Transaction PIN
+    </span>
+    <input
+        type="password"
+        name="transaction_pin"
+        required
+        minlength="6"
+        maxlength="6"
+        pattern="[0-9]{6}"
+        inputmode="numeric"
+        autocomplete="off"
+        placeholder="Enter your 6-digit PIN"
+        class="border rounded-lg p-3 w-full mt-1"
+    >
+</label>
+<button class="bg-blue-800 text-white rounded-lg p-3 w-full">
+                Transfer Virtual Funds
+            </button>
+        </form>
+
+    </div>
+
+    <section class="bg-white rounded-xl shadow p-6">
+        <h3 class="text-xl font-bold mb-5">Transaction History</h3>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+                <thead>
+                    <tr class="border-b text-gray-500">
+                        <th class="py-3">Date (UTC)</th>
+                        <th class="py-3">Type</th>
+                        <th class="py-3">Amount</th>
+                        <th class="py-3">Other Account</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tx in transactions %}
+                    <tr class="border-b">
+                        <td class="py-3">
+                            {{ tx.created_at.strftime('%Y-%m-%d %H:%M') }}
+                        </td>
+                        <td class="py-3">
+                            {{ tx.transaction_type.replace('_', ' ').title() }}
+                        </td>
+                        <td class="py-3 font-semibold">
+                            PHP {{ "{:,.2f}".format(tx.amount) }}
+                        </td>
+                        <td class="py-3">
+                            {{ tx.counterparty or "-" }}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="py-6 text-gray-500 text-center">
+                            No transactions yet.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <p class="text-center text-gray-500 text-sm mt-8">
+        MyBank is a simulation. No real money is transferred.
+    </p>
+
+</div>
+</body>
+</html>
